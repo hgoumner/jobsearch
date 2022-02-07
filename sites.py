@@ -7,37 +7,41 @@ import bs4
 # parse html code
 def html_code( data ):
 
-    soup = bs4.BeautifulSoup( data, 'html.parser' )
-
-    return soup
+    return bs4.BeautifulSoup( data, 'html.parser' )
 
 # get url from input
 def get_data( url ):
     
-    # create string object to contain raw data
-    raw_data = ''
+    while True:
+        # pull data from the internet
+        headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36',}
+        response = requests.get( url, headers=headers )
 
-    headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36',}
-    s = requests.Session()
-    response = s.post( url, headers=headers )
-    text = response.text
-    html_text = html_code( text )
-
-    raw_data += str( html_text )
-
-    new_page = html_text.find_all( 'a', {'class' : 'PageLink-sc-1v4g7my-0 gwcKwa'} )
-    new_page = new_page[0]
-
-    count = 0
-    while (new_page['href'] != '') and (count < 70):
-        response = s.post( new_page['href'], headers=headers )
+        # extract content
         text = response.text
-        html_text = html_code( text )
 
-        raw_data += str(html_text)
-        # print(count)
-        count += 1
+        # create object to contain raw data
+        raw_data = text
 
+        # check if results are split in multiple pages
+        soup = html_code( text )
+        count = 0
+        next_page = soup.find("a", {"title": "Nächste"})
+        # print(next_page)
+
+        if next_page:
+            # next_url = next_page.find("a", href=True)
+            next_url = next_page['href']
+            print(next_url)
+
+            if next_url:
+                url = next_url
+            else:
+                break
+        else:
+            break
+
+    # check_pages
     return raw_data
 
 # filter job data using
@@ -91,7 +95,7 @@ if __name__ == '__main__':
     '''   
 
     description = '%20'.join(['ingenieur','data','science'])
-    location    = 'München'
+    location    = 'Berlin'
     radius      = '30'
     age         = 'age_7'
     contract    = '222'
@@ -108,7 +112,7 @@ if __name__ == '__main__':
 
     # obtain html code
     data =  get_data( url )
-    print(data)
+    # print(data)
 
     # job_res = job_data( soup )
     # com_res = company_data( soup )
