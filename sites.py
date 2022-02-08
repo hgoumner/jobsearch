@@ -2,17 +2,17 @@
 
 import json
 import requests
-import bs4
-
-# parse html code
-def html_code( data ):
-
-    return bs4.BeautifulSoup( data, 'html.parser' )
+from bs4 import BeautifulSoup
+from tabulate import tabulate
 
 # get url from input
 def get_data( url ):
     
+    # create object to contain raw data
+    raw_data = ''
+
     while True:
+
         # pull data from the internet
         headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36',}
         response = requests.get( url, headers=headers )
@@ -20,23 +20,21 @@ def get_data( url ):
         # extract content
         text = response.text
 
-        # create object to contain raw data
-        raw_data = text
+        soup = BeautifulSoup( text, 'html.parser' )
+        raw_data += str( soup )
 
         # check if results are split in multiple pages
-        soup = html_code( text )
-        count = 0
         next_page = soup.find("a", {"title": "Nächste"})
-        # print(next_page)
 
         if next_page:
-            # next_url = next_page.find("a", href=True)
-            next_url = next_page['href']
-            print(next_url)
+            try:
+                next_url = next_page['href']
 
-            if next_url:
-                url = next_url
-            else:
+                if next_url:
+                    url = next_url
+                else:
+                    break
+            except:
                 break
         else:
             break
@@ -46,37 +44,41 @@ def get_data( url ):
 
 # filter job data using
 # find_all function
-def job_data(soup):
+def get_results( data ):
     
-    # find the Html tag
-    # with find()
-    # and convert into string
-    data_str = ""
-    for item in soup.find_all("a", class_="sc-qapaw ERzaP"):
-        data_str = data_str + item.get_text()
-    result_1 = data_str.split("\n")
+    # find the Html tag with find() and convert into string
+    results = []
+    for job in data.find_all( 'div', class_ = 'Wrapper-sc-11673k2-0 fpBevf' ):
 
-    return(result_1)
+        # description of job
+        job_description = ''
+        if hasattr( job.find( 'h2', class_ = 'sc-qapaw ERzaP' ), 'text' ):
+            job_description = job.find( 'h2', class_ = 'sc-qapaw ERzaP' ).text
 
+        # name of company
+        company_name = ''
+        if hasattr( job.find( 'div', class_ = 'sc-pZBmh gelbdv' ), 'text' ):
+            company_name = job.find( 'div', class_ = 'sc-pZBmh gelbdv' ).text
 
-# # filter company_data using
-# # find_all function
-# def company_data(soup):
-#   
-#     # find the Html tag
-#     # with find()
-#     # and convert into string
-#     data_str = ""
-#     result = ""
-#     for item in soup.find_all("div", class_="sc-qapaw ERzaP"):
-#         data_str = data_str + item.get_text()
-#     result_1 = data_str.split("\n")
-#   
-#     res = []
-#     for i in range(1, len(result_1)):
-#         if len(result_1[i]) > 1:
-#             res.append(result_1[i])
-#     return(res)
+        # location of job
+        location = ''
+        if hasattr( job.find( 'li', class_ = 'sc-pBzUF izAMeo sc-pRtAn iAUIOa' ), 'text' ):
+            location = job.find( 'li', class_ = 'sc-pBzUF izAMeo sc-pRtAn iAUIOa' ).text
+
+        # time of posting
+        pub_data = ''
+        if hasattr( job.find( 'time', class_ = 'sc-oTNDV gmBWot' ), 'text' ):
+            pub_data = job.find( 'time', class_ = 'sc-oTNDV gmBWot' ).text
+
+        # website for job listing
+        job_url = ''
+        if job.find( 'a', target = '_blank' )['href'] is not None:
+            job_url = 'https://www.stepstone.de' + job.find( 'a', target = '_blank' )['href'] 
+        
+        print( [job_description, company_name, location, pub_data, job_url] )
+        results.append( [job_description, company_name, location, pub_data, job_url] )
+
+    return results
 
 if __name__ == '__main__':
 
@@ -111,19 +113,16 @@ if __name__ == '__main__':
           '&' + 'wt=' + worktime
 
     # obtain html code
-    data =  get_data( url )
-    # print(data)
+    # data =  get_data( url )
 
-    # job_res = job_data( soup )
-    # com_res = company_data( soup )
-    # print(job_res)
+    with open( 'test.html' , 'r' ) as f:
+        data = f.read()
+
+    # results array
+    data = BeautifulSoup( data, 'html.parser' )
+    results = get_results( data ) 
+
+    # # create html page with results
+    # with open( 'results.html', 'w' ) as f:
+    #     f.write( tabulate( results, tablefmt='html' ) )
     #
-    # temp = 0
-    # for i in range( 1, len( job_res )):
-    #     j = temp
-    #     for j in range( temp, 2+temp ):
-    #         print( "Company Name and Address:" + com_res[j])
-    #
-    #     temp = j
-    #     print( "Job: " + job_res[i])
-    #     print("--------------------------")
