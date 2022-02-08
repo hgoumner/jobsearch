@@ -44,38 +44,39 @@ def get_data( url ):
 
 # filter job data using
 # find_all function
-def get_results( data ):
+def get_results( data, desc='', loc=''):
     
     # find the Html tag with find() and convert into string
     results = []
     for job in data.find_all( 'div', class_ = 'Wrapper-sc-11673k2-0 fpBevf' ):
 
         # description of job
-        job_description = ''
+        job_description = '-'
         if hasattr( job.find( 'h2', class_ = 'sc-qapaw ERzaP' ), 'text' ):
-            job_description = job.find( 'h2', class_ = 'sc-qapaw ERzaP' ).text
+            job_description = job.find( 'h2', class_ = 'sc-qapaw ERzaP' ).text.strip()
 
         # name of company
-        company_name = ''
+        company_name = '-'
         if hasattr( job.find( 'div', class_ = 'sc-pZBmh gelbdv' ), 'text' ):
-            company_name = job.find( 'div', class_ = 'sc-pZBmh gelbdv' ).text
+            company_name = job.find( 'div', class_ = 'sc-pZBmh gelbdv' ).text.strip()
 
         # location of job
-        location = ''
+        location = '-'
         if hasattr( job.find( 'li', class_ = 'sc-pBzUF izAMeo sc-pRtAn iAUIOa' ), 'text' ):
-            location = job.find( 'li', class_ = 'sc-pBzUF izAMeo sc-pRtAn iAUIOa' ).text
+            location = job.find( 'li', class_ = 'sc-pBzUF izAMeo sc-pRtAn iAUIOa' ).text.strip()
+            if loc in location:
+                location = loc
 
         # time of posting
-        pub_data = ''
+        pub_data = '-'
         if hasattr( job.find( 'time', class_ = 'sc-oTNDV gmBWot' ), 'text' ):
-            pub_data = job.find( 'time', class_ = 'sc-oTNDV gmBWot' ).text
+            pub_data = job.find( 'time', class_ = 'sc-oTNDV gmBWot' ).text.strip()
 
         # website for job listing
-        job_url = ''
+        job_url = '-'
         if job.find( 'a', target = '_blank' )['href'] is not None:
-            job_url = 'https://www.stepstone.de' + job.find( 'a', target = '_blank' )['href'] 
+            job_url = 'https://www.stepstone.de' + job.find( 'a', target = '_blank' )['href'].strip() 
         
-        print( [job_description, company_name, location, pub_data, job_url] )
         results.append( [job_description, company_name, location, pub_data, job_url] )
 
     return results
@@ -112,17 +113,27 @@ if __name__ == '__main__':
           '&' + 'ct=' + contract + \
           '&' + 'wt=' + worktime
 
-    # obtain html code
+    # # obtain html code
     # data =  get_data( url )
+    # print( 'Data was pulled...' )
 
     with open( 'test.html' , 'r' ) as f:
         data = f.read()
 
     # results array
     data = BeautifulSoup( data, 'html.parser' )
-    results = get_results( data ) 
+    results = get_results( data, description, location ) 
+    print( 'Job data was extracted...' )
 
-    # # create html page with results
-    # with open( 'results.html', 'w' ) as f:
-    #     f.write( tabulate( results, tablefmt='html' ) )
-    #
+    # create html page with results
+    with open( 'results.html', 'w' ) as f:
+        f.write( tabulate( results, tablefmt='html' ) )
+    print( ' HTML File saved' )
+
+    # create csv file with results
+    with open( 'results.csv', 'w' ) as f:
+        for job in results:
+            print( ','.join(job) )
+
+            f.write( ','.join(job[:]) + '\n' )
+    print( ' CSV File saved' )
