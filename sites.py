@@ -4,6 +4,7 @@ import json
 import requests
 from bs4 import BeautifulSoup
 from tabulate import tabulate
+import pandas as pd
 
 # get url from input
 def get_data( url ):
@@ -44,42 +45,54 @@ def get_data( url ):
 
 # filter job data using
 # find_all function
-def get_results( data, desc='', loc=''):
+def get_results( data, desc='', loc='', **kwargs ):
     
+    # get parsing tags
+    job_listing_tag     = kwargs['job_listing_tag']
+    job_description_tag = kwargs['job_description_tag']
+    company_name_tag    = kwargs['company_name_tag']
+    location_tag        = kwargs['location_tag']
+    pub_data_tag        = kwargs['pub_data_tag']
+    job_url_tag         = kwargs['job_url_tag']
+
     # find the Html tag with find() and convert into string
+    header = ['Listing name', 'Company name', 'Location', 'Publication Date', 'Link']
     results = []
-    for job in data.find_all( 'div', class_ = 'Wrapper-sc-11673k2-0 fpBevf' ):
+    for job in data.find_all( 'div', class_ = job_listing_tag ):
 
         # description of job
         job_description = '-'
-        if hasattr( job.find( 'h2', class_ = 'sc-qapaw ERzaP' ), 'text' ):
-            job_description = job.find( 'h2', class_ = 'sc-qapaw ERzaP' ).text.strip()
+        if hasattr( job.find( 'h2', class_ = job_description_tag ), 'text' ):
+            job_description = job.find( 'h2', class_ = job_description_tag ).text.strip().replace(',', '-')
 
         # name of company
         company_name = '-'
-        if hasattr( job.find( 'div', class_ = 'sc-pZBmh gelbdv' ), 'text' ):
-            company_name = job.find( 'div', class_ = 'sc-pZBmh gelbdv' ).text.strip()
+        if hasattr( job.find( 'div', class_ = company_name_tag ), 'text' ):
+            company_name = job.find( 'div', class_ = company_name_tag ).text.strip().replace(',', '-')
 
         # location of job
         location = '-'
-        if hasattr( job.find( 'li', class_ = 'sc-pBzUF izAMeo sc-pRtAn iAUIOa' ), 'text' ):
-            location = job.find( 'li', class_ = 'sc-pBzUF izAMeo sc-pRtAn iAUIOa' ).text.strip()
-            if loc in location:
-                location = loc
+        if hasattr( job.find( 'li', class_ = location_tag ), 'text' ):
+            location = job.find( 'li', class_ = location_tag ).text.strip().replace(',', '-')
+            if loc.lower() not in location.lower():
+                break
 
         # time of posting
         pub_data = '-'
-        if hasattr( job.find( 'time', class_ = 'sc-oTNDV gmBWot' ), 'text' ):
-            pub_data = job.find( 'time', class_ = 'sc-oTNDV gmBWot' ).text.strip()
+        if hasattr( job.find( 'time', class_ = pub_data_tag ), 'text' ):
+            pub_data = job.find( 'time', class_ = pub_data_tag ).text.strip().replace(',', '-')
 
         # website for job listing
         job_url = '-'
-        if job.find( 'a', target = '_blank' )['href'] is not None:
-            job_url = 'https://www.stepstone.de' + job.find( 'a', target = '_blank' )['href'].strip() 
+        if job.find( 'a', target = job_url_tag )['href'] is not None:
+            job_url_nolink = 'https://www.stepstone.de' + job.find( 'a', target = job_url_tag )['href'].strip() 
+            job_url = '<a href="' + job_url_nolink + '">' + job_url_nolink + '</a>'
         
         results.append( [job_description, company_name, location, pub_data, job_url] )
 
-    return results
+    df = pd.DataFrame( results, columns=header )
+
+    return df
 
 if __name__ == '__main__':
 
@@ -122,18 +135,15 @@ if __name__ == '__main__':
 
     # results array
     data = BeautifulSoup( data, 'html.parser' )
-    results = get_results( data, description, location ) 
+    results = get_results( data, description, location, **logins['sites']['stepstone'] ) 
     print( 'Job data was extracted...' )
 
     # create html page with results
+    results_html = results.to_html( justify='left', escape=False )
     with open( 'results.html', 'w' ) as f:
-        f.write( tabulate( results, tablefmt='html' ) )
+        f.write( results_html )
     print( ' HTML File saved' )
 
     # create csv file with results
-    with open( 'results.csv', 'w' ) as f:
-        for job in results:
-            print( ','.join(job) )
-
-            f.write( ','.join(job[:]) + '\n' )
+    results.to_csv( 'results.csv', sep=',', encoding='utf-8' )
     print( ' CSV File saved' )
