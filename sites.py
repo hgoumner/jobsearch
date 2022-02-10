@@ -79,8 +79,12 @@ def get_results( data, desc='', loc='', **kwargs ):
 
         # time of posting
         pub_data = '-'
-        if hasattr( job.find( 'time', class_ = pub_data_tag ), 'text' ):
-            pub_data = job.find( 'time', class_ = pub_data_tag ).text.strip().replace(',', '-')
+        time_container = job.find( 'li', class_ = pub_data_tag )
+        if hasattr( time_container, 'time' ):
+            if 'datetime' in str( time_container ):
+                pub_data = time_container.time['datetime']
+            else:
+                pub_data = time_container.text
 
         # website for job listing
         job_url = '-'
@@ -97,8 +101,8 @@ def get_results( data, desc='', loc='', **kwargs ):
 if __name__ == '__main__':
 
     # profile information
-    with open( 'logins.json', 'r' ) as f:
-        logins = json.load( f )
+    with open( 'site_info.json', 'r' ) as f:
+        site_info = json.load( f )
 
     # job information
     '''
@@ -118,7 +122,7 @@ if __name__ == '__main__':
     worktime    = '80001'
 
     # create url
-    url = logins['sites']['stepstone']['url'] + \
+    url = site_info['sites']['stepstone']['url'] + \
           '?' + 'ke=' + description + \
           '&' + 'ws=' + location + \
           '&' + 'radius=' + radius + \
@@ -126,24 +130,24 @@ if __name__ == '__main__':
           '&' + 'ct=' + contract + \
           '&' + 'wt=' + worktime
 
-    # # obtain html code
-    # data =  get_data( url )
-    # print( 'Data was pulled...' )
+    # obtain html code
+    data =  get_data( url )
+    print( 'Data was pulled...' )
 
-    with open( 'test.html' , 'r' ) as f:
-        data = f.read()
+    # with open( 'test.html' , 'r' ) as f:
+    #     data = f.read()
 
     # results array
     data = BeautifulSoup( data, 'html.parser' )
-    results = get_results( data, description, location, **logins['sites']['stepstone'] ) 
+    results = get_results( data, description, location, **site_info['sites']['stepstone'] ) 
     print( 'Job data was extracted...' )
 
     # create html page with results
     results_html = results.to_html( justify='left', escape=False )
     with open( 'results.html', 'w' ) as f:
         f.write( results_html )
-    print( ' HTML File saved' )
+    print( 'HTML File saved' )
 
-    # create csv file with results
-    results.to_csv( 'results.csv', sep=',', encoding='utf-8' )
-    print( ' CSV File saved' )
+    # # create csv file with results
+    # results.to_csv( 'results.csv', sep=',', encoding='utf-8' )
+    # print( 'CSV File saved' )
