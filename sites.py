@@ -3,7 +3,7 @@
 import json
 import requests
 from bs4 import BeautifulSoup
-from tabulate import tabulate
+# from tabulate import tabulate
 import pandas as pd
 
 # get url from input
@@ -79,12 +79,8 @@ def get_results( data, desc='', loc='', **kwargs ):
 
         # time of posting
         pub_data = '-'
-        time_container = job.find( 'li', class_ = pub_data_tag )
-        if hasattr( time_container, 'time' ):
-            if 'datetime' in str( time_container ):
-                pub_data = time_container.time['datetime']
-            else:
-                pub_data = time_container.text
+        if hasattr( job.find( 'time', class_ = pub_data_tag ), 'text' ):
+            pub_data = job.find( 'time', class_ = pub_data_tag ).text.strip().replace(',', '-')
 
         # website for job listing
         job_url = '-'
@@ -117,7 +113,7 @@ if __name__ == '__main__':
     description = '%20'.join(['ingenieur','data','science'])
     location    = 'Berlin'
     radius      = '30'
-    age         = 'age_7'
+    age         = 'age_1'
     contract    = '222'
     worktime    = '80001'
 
