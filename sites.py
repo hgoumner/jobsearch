@@ -139,8 +139,9 @@ if __name__ == '__main__':
     print( 'Job data was extracted...' )
 
     # create html page with results
-    results_html = results.to_html( justify='left', escape=False )
+    results_html = results.to_html( justify='left', escape=False, table_id='sortable' )
     with open( 'results.html', 'w' ) as f:
+        f.write( '<script src="sorttable.js"></script>\n\n' )
         f.write( results_html )
     print( 'HTML File saved' )
 
