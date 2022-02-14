@@ -3,11 +3,18 @@
         "stepstone": {
             "url": "https://www.stepstone.de/5/ergebnisliste.html",
             "job_listing_tag": "Wrapper-sc-11673k2-0 fpBevf",
-            "job_description_tag": "sc-qapaw ERzaP",
-            "company_name_tag": "sc-pZBmh gelbdv",
-            "location_tag": "sc-pBzUF izAMeo sc-pRtAn iAUIOa",
-            "pub_data_tag": "sc-oTNDV gmBWot",
-            "job_url_tag": "_blank"
+            "job_description_tag": "job-item-title",
+            "company_name_tag": "job-item-company-name",
+            "location_tag": "job-item-location",
+            "pub_data_tag": "job-item-timeago"
+        },
+        "indeed": {
+            "url": "https://de.indeed.com/jobs",
+            "job_listing_tag": "",
+            "job_description_tag": "",
+            "company_name_tag": "",
+            "location_tag": "",
+            "pub_data_tag": ""
         }
     }
 }
