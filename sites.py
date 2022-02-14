@@ -165,8 +165,38 @@ if __name__ == '__main__':
     results_html = results.to_html(justify='left', escape=False, table_id='sortable')
     filename = location + '.html'
     with open(filename, 'w') as f:
-        f.write('<script src="sorttable.js"></script>\n\n')
-        f.write(results_html)
+        f.write(
+                '''<!DOCTYPE html>
+                <html lang="en"/>
+
+                <head>
+
+                    <link href="style.css" rel="stylesheet">
+
+                </head>
+
+                <script src="sorttable.js"></script>
+                <script src="function.js"></script>
+
+                <body>
+
+                    <section class="container">
+
+                        <h1>Table Filter</h1>
+
+                        <input type="search" class="light-table-filter" data-table="table-info" placeholder="Filter/Search">
+            '''
+        )
+        f.write(results_html.replace('class="dataframe"', 'class="table-info table"'))
+        f.write(
+                '''
+                    </section>
+
+                </body>
+
+                </html>
+            '''
+        )
     print('HTML File saved')
 
     # # create csv file with results

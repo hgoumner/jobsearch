@@ -32,9 +32,9 @@ sorttable = {
     sorttable.DATE_RE = /^(\d\d?)[\/\.-](\d\d?)[\/\.-]((\d\d)?\d\d)$/;
 
     forEach(document.getElementsByTagName('table'), function(table) {
-      if (table.className.search(/\bdataframe\b/) != -1) {
+      // if (table.className.search(/\bdataframe\b/) != -1) {
         sorttable.makeSortable(table);
-      }
+      // }
     });
 
   },
