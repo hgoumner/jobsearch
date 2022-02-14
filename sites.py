@@ -1,5 +1,6 @@
 #!usr/bin/env python3
 
+import sys
 import json
 import requests
 from bs4 import BeautifulSoup
@@ -121,8 +122,8 @@ if __name__ == '__main__':
 
     # basic input
     description = ' '.join(['ingenieur', 'data', 'science'])
-    location = 'Muenchen' # München
-    age = '1'
+    location = sys.argv[1]    # 'Muenchen' # München
+    age = sys.argv[2] # '1'
 
     # create url
     site = 'stepstone'
@@ -136,6 +137,9 @@ if __name__ == '__main__':
         params = {'ke': description, 'ws': location, 'radius': radius, 'ag': 'age_' + age, 'ct': contract, 'wt': worktime}
     
     elif (site == 'indeed'):
+        # extra input
+        contract = 'fulltime'
+        
         url    = site_info['sites']['indeed']['url']
         params = {'': description, 'l': location, 'fromage': age, 'jt': contract}
 
