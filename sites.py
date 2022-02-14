@@ -1,4 +1,4 @@
-#!usr/bin/env python3
+#!/usr/bin/python3
 
 import sys
 import json
@@ -54,7 +54,7 @@ def convert_time(time_job):
 
 # filter job data using
 # find_all function
-def get_results(data, desc='', loc='', **kwargs):
+def get_results(data, desc=None, loc=None, **kwargs):
     # get parsing tags
     job_listing_tag     = kwargs['job_listing_tag']
     job_description_tag = kwargs['job_description_tag']
@@ -71,6 +71,12 @@ def get_results(data, desc='', loc='', **kwargs):
         job_description = '-'
         if hasattr(job.find('a', {'data-at': job_description_tag}), 'h2'):
             job_description = job.find('a', {'data-at': job_description_tag}).h2.text.strip().replace(',', '-')
+            if (' ' in desc):
+                desc = desc.split()
+            if any(item in job_description.lower() for item in desc):
+                pass
+            else:
+                break
 
         # name of company
         company_name = '-'
@@ -121,7 +127,7 @@ if __name__ == '__main__':
     '''
 
     # basic input
-    description = ' '.join(['ingenieur', 'data', 'science'])
+    description = ' '.join(['ingenieur', 'engineer', 'data', 'science'])
     location = sys.argv[1]    # 'Muenchen' # München
     age = sys.argv[2] # '1'
 
@@ -139,7 +145,7 @@ if __name__ == '__main__':
     elif (site == 'indeed'):
         # extra input
         contract = 'fulltime'
-        
+
         url    = site_info['sites']['indeed']['url']
         params = {'': description, 'l': location, 'fromage': age, 'jt': contract}
 
