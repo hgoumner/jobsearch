@@ -1,6 +1,8 @@
 body {
-    margin-top: 150px;
+    margin-top: 50px;
     font-family: 'Lato', sans-serif;
+    background: black;
+    color: white;
 }
 input {
     width: 200px;
@@ -12,9 +14,20 @@ input {
 table {
     margin-top: 30px;
 }
-tr:nth-of-type(even) {
-    background: #ffd98b;
-}
 thead {
-    background: #fbb016;
+    horizontal-align: middle;
+    vertical-align: middle;
+    /* background: #fbb016; */
+    font-size: 20pt;
+    height: 60px;
+}
+tr:nth-of-type(even) {
+    /* background: #ffd98b; */
+    background: gray;
+}
+tr:hover {
+    background-color: coral;
+}
+td {
+    padding: 10px;
 }

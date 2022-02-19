@@ -162,39 +162,39 @@ if __name__ == '__main__':
     print('Job data was extracted...')
 
     # create html page with results
-    results_html = results.to_html(justify='left', escape=False, table_id='sortable')
+    results_html = results.to_html(justify='center', escape=False, table_id='sortable')
     filename = location + '.html'
     with open(filename, 'w') as f:
         f.write(
                 '''<!DOCTYPE html>
-                <html lang="en"/>
+<html lang="en"/>
 
-                <head>
+<head>
 
-                    <link href="style.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
 
-                </head>
+</head>
 
-                <script src="sorttable.js"></script>
-                <script src="function.js"></script>
+<script src="sorttable.js"></script>
+<script src="function.js"></script>
 
-                <body>
+<body>
 
-                    <section class="container">
+    <section class="container">
 
-                        <h1>Table Filter</h1>
+        <h1>Table Filter</h1>
 
-                        <input type="search" class="light-table-filter" data-table="table-info" placeholder="Filter/Search">
+        <input type="search" class="light-table-filter" data-table="table-info" placeholder="Filter/Search">
             '''
         )
         f.write(results_html.replace('class="dataframe"', 'class="table-info table"'))
         f.write(
                 '''
-                    </section>
+    </section>
 
-                </body>
+</body>
 
-                </html>
+</html>
             '''
         )
     print('HTML File saved')
