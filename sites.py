@@ -8,14 +8,17 @@ import pandas as pd
 
 
 # get url from input
-def get_data(url, params):
+def get_data(url, params, next_page_tag):
+
     # create object to contain raw data
     raw_data = ''
+
+    # headers for data pulling
+    headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36', }
 
     while True:
 
         # pull data from the internet
-        headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36', }
         response = requests.get(url, params=params, headers=headers)
 
         # extract content
@@ -25,11 +28,13 @@ def get_data(url, params):
         raw_data += str(soup)
 
         # check if results are split in multiple pages
-        next_page = soup.find("a", {"title": "Nächste"})
+        next_page = soup.find(next_page_tag[0], {next_page_tag[1]: next_page_tag[2]})
 
         if next_page:
             try:
                 next_url = next_page['href']
+                if ('http' not in next_url):
+                    next_url = 'https://de.indeed.com' + next_url
 
                 if next_url:
                     url = next_url
@@ -63,43 +68,45 @@ def get_results(data, desc=None, loc=None, **kwargs):
     pub_data_tag        = kwargs['pub_data_tag']
 
     # find the Html tag with find() and convert into string
-    header = ['Listing name', 'Company name', 'Location', 'Age', 'Link']
+    header = ['Listing name', 'Company name', 'Location', 'Age']
     results = []
-    for job in data.find_all('div', {'class': job_listing_tag}):
+    for job in data.find_all(job_listing_tag[0], {job_listing_tag[1]: job_listing_tag[2]}):
 
         # description of job
         job_description = '-'
-        if hasattr(job.find('a', {'data-at': job_description_tag}), 'h2'):
-            job_description = job.find('a', {'data-at': job_description_tag}).h2.text.strip().replace(',', '-')
+        if hasattr(job.find(job_description_tag[0], {job_description_tag[1]: job_description_tag[2]}), job_description_tag[3]):
+            job_description = job.find(job_description_tag[0], {job_description_tag[1]: job_description_tag[2]}).h2.text.strip().replace(',', '-')
             if (' ' in desc):
                 desc = desc.split()
             if any(item in job_description.lower() for item in desc):
-                pass
+                job_url_nolink = 'https://www.stepstone.de' + job.find(job_description_tag[0], {job_description_tag[1]: job_description_tag[2]})['href'].strip()
+                job_url = '<a href="' + job_url_nolink + '">' + job_description + '</a>'
+                # pass
             else:
                 break
 
         # name of company
         company_name = '-'
-        if hasattr(job.find('div', {'data-at': company_name_tag}), 'text'):
-            company_name = job.find('div', {'data-at': company_name_tag}).text.strip().replace(',', '-')
+        if hasattr(job.find(company_name_tag[0], {company_name_tag[1]: company_name_tag[2]}), 'text'):
+            company_name = job.find(company_name_tag[0], {company_name_tag[1]: company_name_tag[2]}).text.strip().replace(',', '-')
 
         # location of job
         location = '-'
-        if hasattr(job.find('li', {'data-at': location_tag}), 'text'):
-            location = job.find('li', {'data-at': location_tag}).text.strip().replace(',', '-')
+        if hasattr(job.find(location_tag[0], {location_tag[1]: location_tag[2]}), 'text'):
+            location = job.find(location_tag[0], {location_tag[1]: location_tag[2]}).text.strip().replace(',', '-')
 
         # time of posting
         pub_data = '-'
-        if hasattr(job.find('li', {'data-at': pub_data_tag}), 'text'):
-            pub_data = convert_time(job.find('li', {'data-at': pub_data_tag}).text)
+        if hasattr(job.find(pub_data_tag[0], {pub_data_tag[1]: pub_data_tag[2]}), 'text'):
+            pub_data = convert_time(job.find(pub_data_tag[0], {pub_data_tag[1]: pub_data_tag[2]}).text)
 
-        # website for job listing
-        job_url = '-'
-        if job.find('a', {'data-at': job_description_tag})['href'] is not None:
-            job_url_nolink = 'https://www.stepstone.de' + job.find('a', {'data-at': job_description_tag})['href'].strip()
-            job_url = '<a href="' + job_url_nolink + '">' + job_url_nolink + '</a>'
-
-        results.append([job_description, company_name, location, pub_data, job_url])
+        # # website for job listing
+        # job_url = '-'
+        # if job.find('a', {'data-at': job_description_tag})['href'] is not None:
+        #     job_url_nolink = 'https://www.stepstone.de' + job.find('a', {'data-at': job_description_tag})['href'].strip()
+        #     job_url = '<a href="' + job_url_nolink + '">' + job_url_nolink + '</a>'
+        #
+        results.append([job_url, company_name, location, pub_data])
 
     df = pd.DataFrame(results, columns=header)
 
@@ -139,26 +146,28 @@ if __name__ == '__main__':
         contract = '222'
         worktime = '80001'
 
-        url    = site_info['sites']['stepstone']['url']
+        url    = site_info[site]['url']
         params = {'ke': description, 'ws': location, 'radius': radius, 'ag': 'age_' + age, 'ct': contract, 'wt': worktime}
+        next_page_tag = site_info[site]['next_page_tag']
     
     elif (site == 'indeed'):
         # extra input
         contract = 'fulltime'
 
-        url    = site_info['sites']['indeed']['url']
-        params = {'': description, 'l': location, 'fromage': age, 'jt': contract}
+        url    = site_info[site]['url']
+        params = {'q': description, 'l': location, 'fromage': age, 'jt': contract}
+        next_page_tag = site_info[site]['next_page_tag']
 
     # obtain html code
-    data = get_data(url, params)
+    data = get_data(url, params, next_page_tag)
     print('Data was pulled...')
 
-    # with open( 'test.html' , 'r' ) as f:
+    # with open( 'indeed.html' , 'r' ) as f:
     #     data = f.read()
-
+ 
     # results array
     data = BeautifulSoup(data, 'html.parser')
-    results = get_results(data, description, location, **site_info['sites']['stepstone'])
+    results = get_results(data, description, location, **site_info[site])
     print('Job data was extracted...')
 
     # create html page with results
