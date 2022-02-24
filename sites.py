@@ -186,6 +186,8 @@ if __name__ == '__main__':
 
 <script src="sorttable.js"></script>
 <script src="function.js"></script>
+<script src="hotkeys.js"></script>
+<script src="key_shortcuts.js"></script>
 
 <body>
 
