@@ -136,7 +136,7 @@ if __name__ == '__main__':
     # basic input
     description = ' '.join(['ingenieur', 'engineer', 'data', 'science'])
     location = sys.argv[1]    # 'Muenchen' # München
-    age = sys.argv[2] # '1'
+    age = sys.argv[2]         # '1'
 
     # create url
     site = 'stepstone'
@@ -160,7 +160,7 @@ if __name__ == '__main__':
 
     # obtain html code
     data = get_data(url, params, next_page_tag)
-    print('Data was pulled...')
+    print('\n1/3 Data was pulled')
 
     # with open( 'indeed.html' , 'r' ) as f:
     #     data = f.read()
@@ -168,7 +168,7 @@ if __name__ == '__main__':
     # results array
     data = BeautifulSoup(data, 'html.parser')
     results = get_results(data, description, location, **site_info[site])
-    print('Job data was extracted...')
+    print('2/3 Job data was extracted')
 
     # create html page with results
     results_html = results.to_html(justify='center', escape=False, table_id='sortable')
@@ -208,7 +208,7 @@ if __name__ == '__main__':
 </html>
             '''
         )
-    print('HTML File saved')
+    print('3/3 HTML File saved')
 
     # # create csv file with results
     # results.to_csv( 'results.csv', sep=',', encoding='utf-8' )
