@@ -134,9 +134,9 @@ if __name__ == '__main__':
     '''
 
     # basic input
-    description = ' '.join(['ingenieur', 'engineer', 'data', 'science'])
-    location = sys.argv[1]    # 'Muenchen' # München
-    age = sys.argv[2]         # '1'
+    description = ' '.join(['ingenieur', 'engineer', 'modelica'])
+    location    = 'Berlin'                                          #sys.argv[1]
+    age         = '1'                                               #sys.argv[2]
 
     # create url
     site = 'stepstone'
