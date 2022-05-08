@@ -134,7 +134,7 @@ if __name__ == '__main__':
     '''
 
     # basic input
-    description = ' '.join(['ingenieur', 'engineer', 'modelica'])
+    description = ' '.join(['ingenieur', 'engineer', 'modelica', 'simulation'])
     location    = 'Berlin'                                          #sys.argv[1]
     age         = '1'                                               #sys.argv[2]
 
