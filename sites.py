@@ -16,6 +16,7 @@ def get_data(url, params, next_page_tag):
     # headers for data pulling
     headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36', }
 
+    page_count = 1
     while True:
 
         # pull data from the internet
@@ -27,6 +28,8 @@ def get_data(url, params, next_page_tag):
         soup = BeautifulSoup(text, 'html.parser')
         raw_data += str(soup)
 
+        print("Page %d" % page_count)
+        
         # check if results are split in multiple pages
         next_page = soup.find(next_page_tag[0], {next_page_tag[1]: next_page_tag[2]})
 
@@ -38,6 +41,7 @@ def get_data(url, params, next_page_tag):
 
                 if next_url:
                     url = next_url
+                    page_count += 1
                 else:
                     break
             except Exception as e:
