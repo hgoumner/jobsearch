@@ -114,7 +114,7 @@ def get_results(data, desc=None, loc=None, **kwargs):
 
     df = pd.DataFrame(results, columns=header)
 
-    return df
+    return df.sort_values(by='Company name', ascending=True)
 
 
 if __name__ == '__main__':
