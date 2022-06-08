@@ -72,7 +72,7 @@ def get_results(data, desc=None, loc=None, **kwargs):
     pub_data_tag        = kwargs['pub_data_tag']
 
     # find the Html tag with find() and convert into string
-    header = ['Listing name', 'Company name', 'Location', 'Age']
+    header = ['Listing name', 'Company name']
     results = []
     for job in data.find_all(job_listing_tag[0], {job_listing_tag[1]: job_listing_tag[2]}):
 
@@ -110,7 +110,7 @@ def get_results(data, desc=None, loc=None, **kwargs):
         #     job_url_nolink = 'https://www.stepstone.de' + job.find('a', {'data-at': job_description_tag})['href'].strip()
         #     job_url = '<a href="' + job_url_nolink + '">' + job_url_nolink + '</a>'
         #
-        results.append([job_url, company_name, location, pub_data])
+        results.append([job_url, company_name])
 
     df = pd.DataFrame(results, columns=header)
 

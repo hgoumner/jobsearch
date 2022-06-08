@@ -12,6 +12,9 @@ input {
     height: 40px;
 }
 table {
+    position: absolute;
+    height: 95%;
+    width: 95%;
     margin-top: 30px;
 }
 thead {
