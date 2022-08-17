@@ -1,7 +1,7 @@
 {
     "stepstone": {
         "url": "https://www.stepstone.de/5/ergebnisliste.html",
-        "job_listing_tag": ["div", "class", "Wrapper-sc-11673k2-0 fpBevf"],
+        "job_listing_tag": ["div", "class", "Wrapper-sc-11673k2-0 cmgNOQ"],
         "job_description_tag": ["a", "data-at", "job-item-title", "h2"],
         "company_name_tag": ["div", "data-at", "job-item-company-name"],
         "location_tag": ["li", "data-at", "job-item-location"],
