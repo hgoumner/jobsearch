@@ -79,7 +79,7 @@ def get_results(data, desc=None, loc=None, **kwargs):
         # description of job
         job_description = '-'
         if hasattr(job.find(job_description_tag[0], {job_description_tag[1]: job_description_tag[2]}), job_description_tag[3]):
-            job_description = job.find(job_description_tag[0], {job_description_tag[1]: job_description_tag[2]}).h2.text.strip().replace(',', '-')
+            job_description = job.find(job_description_tag[0], {job_description_tag[1]: job_description_tag[2]}).text.strip().replace(',', '-')
             if (' ' in desc):
                 desc = desc.split()
             if any(item in job_description.lower() for item in desc):

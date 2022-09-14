@@ -2,20 +2,11 @@
     "stepstone": {
         "url": "https://www.stepstone.de/5/ergebnisliste.html",
         "job_listing_tag": ["div", "class", "Wrapper-sc-11673k2-0 cmgNOQ"],
-        "job_description_tag": ["a", "data-at", "job-item-title", "h2"],
+        "job_description_tag": ["a", "data-at", "job-item-title", "text"],
         "company_name_tag": ["div", "data-at", "job-item-company-name"],
         "location_tag": ["li", "data-at", "job-item-location"],
         "pub_data_tag": ["li", "data-at", "job-item-timeago"],
         "next_page_tag": ["a", "title", "Nächste"]
-    },
-    "indeed": {
-        "url": "https://de.indeed.com/jobs",
-        "job_listing_tag": ["a","class", "result"],
-        "job_description_tag": ["h2","class", "jobTitle"],
-        "company_name_tag": ["span","class", "companyName"],
-        "location_tag": ["span","class", "companyLocation"],
-        "pub_data_tag": ["span","class", "date"],
-        "next_page_tag": ["a", "aria-label", "Weiter"]
     }
 }
     
