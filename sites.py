@@ -118,6 +118,7 @@ def get_results(data, desc=None, loc=None, **kwargs):
 
 
 if __name__ == '__main__':
+
     # profile information
     with open('site_info.json', 'r') as f:
         site_info = json.load(f)
@@ -130,11 +131,6 @@ if __name__ == '__main__':
         &ag=age_7
         &ct=222
         &wt=80001
-
-        https://de.indeed.com/jobs?q=Ingenieur%20data%20science
-        &l=Berlin
-        &jt=fulltime
-        &fromage=7
     '''
 
     # basic input
@@ -154,21 +150,10 @@ if __name__ == '__main__':
         params = {'ke': description, 'ws': location, 'radius': radius, 'ag': 'age_' + age, 'ct': contract, 'wt': worktime}
         next_page_tag = site_info[site]['next_page_tag']
     
-    elif (site == 'indeed'):
-        # extra input
-        contract = 'fulltime'
-
-        url    = site_info[site]['url']
-        params = {'q': description, 'l': location, 'fromage': age, 'jt': contract}
-        next_page_tag = site_info[site]['next_page_tag']
-
     # obtain html code
     data = get_data(url, params, next_page_tag)
     print('\n1/3 Data was pulled')
 
-    # with open( 'indeed.html' , 'r' ) as f:
-    #     data = f.read()
- 
     # results array
     data = BeautifulSoup(data, 'html.parser')
     results = get_results(data, description, location, **site_info[site])
@@ -211,7 +196,3 @@ if __name__ == '__main__':
             '''
         )
     print('3/3 HTML File saved')
-
-    # # create csv file with results
-    # results.to_csv( 'results.csv', sep=',', encoding='utf-8' )
-    # print( 'CSV File saved' )
