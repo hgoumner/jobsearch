@@ -1,14 +1,47 @@
 #!/usr/bin/python3
 
-import sys
-import json
-import requests
-from bs4 import BeautifulSoup
-import pandas as pd
+from os.path  import exists
+from json     import load
+from requests import get
+from bs4      import BeautifulSoup
+from pandas   import DataFrame
+
+# load site parameters
+def load_parameters():
+    
+    if exists('./site_info.json'):
+        with open('./site_info.json', 'r') as f:
+            site_info = load(f)
+    else:
+        raise FileNotFoundError("The parameter file was not found.")
+
+    return site_info
 
 
 # get url from input
-def get_data(url, params, next_page_tag):
+def get_data(search_criteria: dict, site_params: dict):
+    
+    url = site_params["url"]
+    parameter_names = site_params["search_parameters"]
+    parameter_values = search_criteria
+    if "age" in parameter_names.keys():
+        params = {
+            parameter_names["description"]: parameter_values['description'],
+            parameter_names['location']: parameter_values['location'],
+            parameter_names['radius']: parameter_values['radius'],
+            parameter_names['age']: 'age_' + parameter_values['age'],
+            parameter_names['contract']: parameter_names['contract_type'],
+            parameter_names['worktime']: parameter_names['worktime_type']
+        }
+    else:
+        params = {
+            parameter_names["description"]: parameter_values['description'],
+            parameter_names['location']: parameter_values['location'],
+            parameter_names['radius']: parameter_values['radius'],
+            parameter_names['contract']: parameter_names['contract_type'],
+            parameter_names['worktime']: parameter_names['worktime_type']
+        }
+    next_page_tag = parameter_names["next_page_tag"]
 
     # create object to contain raw data
     raw_data = ''
@@ -20,7 +53,8 @@ def get_data(url, params, next_page_tag):
     while True:
 
         # pull data from the internet
-        response = requests.get(url, params=params, headers=headers)
+        response = get(url, params=params, headers=headers)
+        print(response.url)
 
         # extract content
         text = response.text
@@ -36,11 +70,9 @@ def get_data(url, params, next_page_tag):
         if next_page:
             try:
                 next_url = next_page['href']
-                if ('http' not in next_url):
-                    next_url = 'https://de.indeed.com' + next_url
-
-                if next_url:
+                if next_url and (url != next_url):
                     url = next_url
+                    params = None
                     page_count += 1
                 else:
                     break
@@ -50,6 +82,8 @@ def get_data(url, params, next_page_tag):
             break
 
     # check_pages
+    raw_data = BeautifulSoup(raw_data, 'html.parser')
+
     return raw_data
 
 
@@ -63,13 +97,15 @@ def convert_time(time_job):
 
 # filter job data using
 # find_all function
-def get_results(data, desc=None, loc=None, **kwargs):
+def get_results(data: BeautifulSoup, search_criteria: dict, job_parameters: dict):
     # get parsing tags
-    job_listing_tag     = kwargs['job_listing_tag']
-    job_description_tag = kwargs['job_description_tag']
-    company_name_tag    = kwargs['company_name_tag']
-    location_tag        = kwargs['location_tag']
-    pub_data_tag        = kwargs['pub_data_tag']
+    description = search_criteria["description"]
+    location = search_criteria["location"]
+    job_listing_tag     = job_parameters['job_listing_tag']
+    job_description_tag = job_parameters['job_description_tag']
+    company_name_tag    = job_parameters['company_name_tag']
+    location_tag        = job_parameters['location_tag']
+    pub_data_tag        = job_parameters['pub_data_tag']
 
     # find the Html tag with find() and convert into string
     header = ['Listing name', 'Company name']
@@ -80,9 +116,9 @@ def get_results(data, desc=None, loc=None, **kwargs):
         job_description = '-'
         if hasattr(job.find(job_description_tag[0], {job_description_tag[1]: job_description_tag[2]}), job_description_tag[3]):
             job_description = job.find(job_description_tag[0], {job_description_tag[1]: job_description_tag[2]}).text.strip().replace(',', '-')
-            if (' ' in desc):
-                desc = desc.split()
-            if any(item in job_description.lower() for item in desc):
+            if (' ' in description):
+                description = description.split()
+            if any(item in job_description.lower() for item in description):
                 job_url_nolink = 'https://www.stepstone.de' + job.find(job_description_tag[0], {job_description_tag[1]: job_description_tag[2]})['href'].strip()
                 job_url = '<a href="' + job_url_nolink + '">' + job_description + '</a>'
                 # pass
@@ -104,64 +140,15 @@ def get_results(data, desc=None, loc=None, **kwargs):
         if hasattr(job.find(pub_data_tag[0], {pub_data_tag[1]: pub_data_tag[2]}), 'text'):
             pub_data = convert_time(job.find(pub_data_tag[0], {pub_data_tag[1]: pub_data_tag[2]}).text)
 
-        # # website for job listing
-        # job_url = '-'
-        # if job.find('a', {'data-at': job_description_tag})['href'] is not None:
-        #     job_url_nolink = 'https://www.stepstone.de' + job.find('a', {'data-at': job_description_tag})['href'].strip()
-        #     job_url = '<a href="' + job_url_nolink + '">' + job_url_nolink + '</a>'
-        #
         results.append([job_url, company_name])
 
-    df = pd.DataFrame(results, columns=header)
+    df = DataFrame(results, columns=header)
+    df.sort_values(by='Company name', ascending=True)
 
-    return df.sort_values(by='Company name', ascending=True)
+    return df
 
+def write_output(filename: str, results: str):
 
-if __name__ == '__main__':
-
-    # profile information
-    with open('site_info.json', 'r') as f:
-        site_info = json.load(f)
-
-    # job information
-    '''
-        https://www.stepstone.de/5/ergebnisliste.html?ke=Ingenieurwesen%20Data%20Science
-        &ws=Berlin
-        &radius=30
-        &ag=age_7
-        &ct=222
-        &wt=80001
-    '''
-
-    # basic input
-    description = ' '.join(['ingenieur', 'engineer', 'modelica', 'simulation'])
-    location    = 'Berlin'                                          #sys.argv[1]
-    age         = '1'                                               #sys.argv[2]
-
-    # create url
-    site = 'stepstone'
-    if (site == 'stepstone'):
-        # extra input
-        radius = '30'
-        contract = '222'
-        worktime = '80001'
-
-        url    = site_info[site]['url']
-        params = {'ke': description, 'ws': location, 'radius': radius, 'ag': 'age_' + age, 'ct': contract, 'wt': worktime}
-        next_page_tag = site_info[site]['next_page_tag']
-    
-    # obtain html code
-    data = get_data(url, params, next_page_tag)
-    print('\n1/3 Data was pulled')
-
-    # results array
-    data = BeautifulSoup(data, 'html.parser')
-    results = get_results(data, description, location, **site_info[site])
-    print('2/3 Job data was extracted')
-
-    # create html page with results
-    results_html = results.to_html(justify='center', escape=False, table_id='sortable')
-    filename = location + '.html'
     with open(filename, 'w') as f:
         f.write(
                 '''<!DOCTYPE html>
@@ -185,7 +172,7 @@ if __name__ == '__main__':
         <input type="search" class="light-table-filter" data-table="table-info" placeholder="Filter/Search">
             '''
         )
-        f.write(results_html.replace('class="dataframe"', 'class="table-info table"'))
+        f.write(results.replace('class="dataframe"', 'class="table-info table"'))
         f.write(
                 '''
     </section>
@@ -195,4 +182,3 @@ if __name__ == '__main__':
 </html>
             '''
         )
-    print('3/3 HTML File saved')

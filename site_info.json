@@ -1,12 +1,52 @@
 {
-    "stepstone": {
-        "url": "https://www.stepstone.de/5/ergebnisliste.html",
-        "job_listing_tag": ["div", "class", "Wrapper-sc-11673k2-0 cmgNOQ"],
-        "job_description_tag": ["a", "data-at", "job-item-title", "text"],
-        "company_name_tag": ["span", "data-at", "job-item-company-name"],
-        "location_tag": ["span", "data-at", "job-item-location"],
-        "pub_data_tag": ["span", "data-at", "job-item-timeago"],
-        "next_page_tag": ["a", "title", "Nächste"]
+    "search_criteria": {
+        "radius": "30",
+        "description": "ingenieur engineer modelica simulation",
+        "location": "Berlin",
+        "age": "1"
+    },
+    "sites": {
+        "stepstone": {
+            "url" : "https://www.stepstone.de/5/ergebnisliste.html",
+            "search_parameters" : {
+                "description": "ke",
+                "location": "ws",
+                "age": "ag",
+                "radius": "radius",
+                "contract": "ct",
+                "worktime": "wt",
+                "contract_type" : "222",
+                "worktime_type" : "80001",
+                "next_page_tag" : ["a", "aria-label", "Nächste"]
+            },
+            "job_parameters" : {
+                "job_listing_tag" : ["div", "class", "Wrapper-sc-11673k2-0 cmgNOQ"],
+                "job_description_tag" : ["a", "data-at", "job-item-title", "text"],
+                "company_name_tag" : ["span", "data-at", "job-item-company-name"],
+                "location_tag" : ["span", "data-at", "job-item-location"],
+                "pub_data_tag" : ["span", "data-at", "job-item-timeago"]
+            }
+        },
+        "kimeta": {
+            "url" : "https://www.kimeta.de/search",
+            "search_parameters" : {
+                "description": "q",
+                "location": "loc",
+                "radius": "r",
+                "contract": "beschäftigungsart",
+                "worktime": "zeitintensität",
+                "contract_type" : "Festanstellung",
+                "worktime_type" : "Vollzeit",
+                "next_page_tag" : ["a", "class", "jsx-1403314298 more"]
+            },
+            "job_parameters" : {
+                "job_listing_tag" : ["li", "class", "jsx-38342742 "],
+                "job_description_tag" : ["h3", "class", "jsx-3416347379", "text"],
+                "company_name_tag" : ["span", "class", "jsx-2465661648"],
+                "location_tag" : ["span", "class", "jsx-3949458504 locationtext"],
+                "pub_data_tag" : ["", "", ""]
+            }
+        }
     }
 }
-    
+

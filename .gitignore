@@ -2,3 +2,5 @@
 *.json
 *.html
 .idea/
+
+__pycache__
