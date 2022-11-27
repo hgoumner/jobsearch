@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 
 # import modules
 from sites import load_parameters, get_data, get_results, write_output

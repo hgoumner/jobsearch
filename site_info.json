@@ -17,10 +17,10 @@
                 "worktime": "wt",
                 "contract_type" : "222",
                 "worktime_type" : "80001",
-                "next_page_tag" : ["a", "aria-label", "Nächste"]
+                "next_page_tag" : ["a", "aria-label", "nächste"]
             },
             "job_parameters" : {
-                "job_listing_tag" : ["div", "class", "Wrapper-sc-11673k2-0 cmgNOQ"],
+                "job_listing_tag" : ["div", "class", "Wrapper-sc-11673k2-0 eHVkAX"],
                 "job_description_tag" : ["a", "data-at", "job-item-title", "text"],
                 "company_name_tag" : ["span", "data-at", "job-item-company-name"],
                 "location_tag" : ["span", "data-at", "job-item-location"],
@@ -35,8 +35,8 @@
                 "radius": "r",
                 "contract": "beschäftigungsart",
                 "worktime": "zeitintensität",
-                "contract_type" : "Festanstellung",
-                "worktime_type" : "Vollzeit",
+                "contract_type" : "festanstellung",
+                "worktime_type" : "vollzeit",
                 "next_page_tag" : ["a", "class", "jsx-1403314298 more"]
             },
             "job_parameters" : {

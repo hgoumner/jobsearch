@@ -54,7 +54,6 @@ def get_data(search_criteria: dict, site_params: dict):
 
         # pull data from the internet
         response = get(url, params=params, headers=headers)
-        print(response.url)
 
         # extract content
         text = response.text
@@ -62,8 +61,6 @@ def get_data(search_criteria: dict, site_params: dict):
         soup = BeautifulSoup(text, 'html.parser')
         raw_data += str(soup)
 
-        print("Page %d" % page_count)
-        
         # check if results are split in multiple pages
         next_page = soup.find(next_page_tag[0], {next_page_tag[1]: next_page_tag[2]})
 
@@ -143,7 +140,7 @@ def get_results(data: BeautifulSoup, search_criteria: dict, job_parameters: dict
         results.append([job_url, company_name])
 
     df = DataFrame(results, columns=header)
-    df.sort_values(by='Company name', ascending=True)
+    df = df.sort_values(by='Company name', ascending=True)
 
     return df
 
