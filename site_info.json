@@ -20,7 +20,7 @@
                 "next_page_tag" : ["a", "aria-label", "nächste"]
             },
             "job_parameters" : {
-                "job_listing_tag" : ["div", "class", "Wrapper-sc-11673k2-0 eHVkAX"],
+                "job_listing_tag" : ["article", "class", "resultlist-1jx3vjx"],
                 "job_description_tag" : ["a", "data-at", "job-item-title", "text"],
                 "company_name_tag" : ["span", "data-at", "job-item-company-name"],
                 "location_tag" : ["span", "data-at", "job-item-location"],
