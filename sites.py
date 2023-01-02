@@ -1,16 +1,18 @@
 #!/usr/bin/python3
 
-from os.path  import exists
+from os.path  import dirname, exists, realpath
 from json     import load
 from requests import get
 from bs4      import BeautifulSoup
 from pandas   import DataFrame
 
+FILE_DIR = dirname(realpath(__file__))
+
 # load site parameters
 def load_parameters():
     
-    if exists('./site_info.json'):
-        with open('./site_info.json', 'r') as f:
+    if exists(FILE_DIR + '/site_info.json'):
+        with open(FILE_DIR + '/site_info.json', 'r') as f:
             site_info = load(f)
     else:
         raise FileNotFoundError("The parameter file was not found.")
